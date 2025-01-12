@@ -24,20 +24,30 @@ internal class BinEntryViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> get() = _error
 
+    private val errorClearDelay = 3000L
+
     fun fetchBinInfo(bin: String) {
         viewModelScope.launch {
             val cleanedBin = bin.replace(" ", "")
             val result = fetchBinInfoUseCase(cleanedBin)
             result.onSuccess { binInfo ->
                 _binInfo.value = binInfo
-//                _error.value = null
+                _error.value = null
             }.onFailure { error ->
                 _error.value = error.message ?: "Произошла ошибка"
+                clearErrorWithDelay()
             }
         }
     }
 
     fun updateBin(input: String) {
         _bin.update { input }
+    }
+
+    private fun clearErrorWithDelay() {
+        viewModelScope.launch {
+            kotlinx.coroutines.delay(errorClearDelay)
+            _error.value = null
+        }
     }
 }

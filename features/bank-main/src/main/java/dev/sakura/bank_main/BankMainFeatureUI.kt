@@ -1,8 +1,15 @@
 package dev.sakura.bank_main
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +29,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,16 +38,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dev.sakura.bank.uikit.BankTheme
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +70,12 @@ public fun BankMainScreen() {
         ) {
             composable("bin_entry") { BinEntryScreen(navController = navController) }
             composable("bin_history") { BinHistoryScreen(navController = navController) }
+        }
+    }
+
+    BackHandler(enabled = navController.previousBackStackEntry != null) {
+        if (navController.previousBackStackEntry != null) {
+            navController.popBackStack()
         }
     }
 }
@@ -124,23 +135,32 @@ internal fun BinEntryScreen(
                     Spacer(modifier = Modifier.height(8.dp))
                     Text("Схема: ${binInfo?.scheme}", style = BankTheme.typography.bodyMedium)
                     Text("Тип: ${binInfo?.type}", style = BankTheme.typography.bodyMedium)
-                    Text("Страна: ${binInfo?.country?.name}", style = BankTheme.typography.bodyMedium)
+                    Text(
+                        "Страна: ${binInfo?.country?.name}",
+                        style = BankTheme.typography.bodyMedium
+                    )
                 }
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
 
         if (error != null) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = BankTheme.colorScheme.errorContainer)
+            AnimatedVisibility(
+                visible = error != null,
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
-                Text(
-                    "Ошибка: $error",
-                    color = BankTheme.colorScheme.onErrorContainer,
-                    modifier = Modifier.padding(16.dp)
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = BankTheme.colorScheme.errorContainer)
+                ) {
+                    Text(
+                        text = "Ошибка: $error",
+                        color = BankTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -155,22 +175,28 @@ internal fun BinHistoryScreen(
     val history by binHistoryViewModel.history.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = "История запросов",
-            style = BankTheme.typography.headlineMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 64.dp),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                Text(
+                    text = "История запросов",
+                    style = BankTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
 
-        Button(onClick = { showDialog = true }) {
-            Text("Очистить")
-        }
+            item {
+                Button(onClick = { showDialog = true }) {
+                    Text("Очистить")
+                }
+            }
 
-        LazyColumn {
             items(history) { item ->
                 var expanded by remember { mutableStateOf(false) }
                 Card(
@@ -195,11 +221,11 @@ internal fun BinHistoryScreen(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
         Button(
             onClick = { navController.popBackStack() },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(16.dp)
         ) {
             Text("Назад")
         }

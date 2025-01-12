@@ -22,6 +22,7 @@ object BinApiClient {
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
+            .addInterceptor(RateLimitInterceptor())
             .build()
     }
 

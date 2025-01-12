@@ -12,6 +12,9 @@ interface BinHistoryDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(binHistoryEntity: BinHistoryEntity)
 
+    @Query("SELECT * FROM bin_history WHERE bin = :bin LIMIT 1")
+    suspend fun getByBin(bin: String): BinHistoryEntity?
+
     @Query("SELECT * FROM bin_history ORDER BY timestamp DESC")
     fun getAll(): Flow<List<BinHistoryEntity>>
 

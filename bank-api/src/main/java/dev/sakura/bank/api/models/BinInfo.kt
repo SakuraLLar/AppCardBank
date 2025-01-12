@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BinInfo(
-    @SerialName("number") val number: NumberInfo?,
+    @SerialName("number") val number: NumberInfo? = null,
     @SerialName("scheme") val scheme: String? = null,
     @SerialName("type") val type: String? = null,
     @SerialName("brand") val brand: String? = null,
