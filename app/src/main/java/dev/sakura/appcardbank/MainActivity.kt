@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
-import dev.sakura.bank_main.BankMainScreen
 import dev.sakura.bank.uikit.BankTheme
+import dev.sakura.bank_main.BankMainScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

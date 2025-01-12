@@ -1,6 +1,5 @@
 package dev.sakura.bank_main
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -38,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -156,7 +154,7 @@ internal fun BinEntryScreen(
                     colors = CardDefaults.cardColors(containerColor = BankTheme.colorScheme.errorContainer)
                 ) {
                     Text(
-                        text = "Ошибка: $error",
+                        text = "Некорректные данные",
                         color = BankTheme.colorScheme.onErrorContainer,
                         modifier = Modifier.padding(16.dp)
                     )
